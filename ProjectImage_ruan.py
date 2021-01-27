@@ -100,9 +100,9 @@ for tag in tags:
     for i in range(match_length):
         src = os.path.join(pathname+f"{tag}", match[i])
         dst = os.path.join(named_train_dirs[tag], match[i])
-        print(f"copying from {src} to {dst}")
+        #print(f"copying from {src} to {dst}")
         shutil.copyfile(src, dst)
-    print("Done")
+    # print("Done")
 
  # copia os dados para pasta de validacao
 for tag in tags:
@@ -115,9 +115,9 @@ for tag in tags:
     for i in range(train_length, valid_length, 1):
         src = os.path.join(pathname+f"{tag}", match[i])
         dst = os.path.join(named_valid_dirs[tag], match[i])
-        print(f"copying from {src} to {dst}")
+        #print(f"copying from {src} to {dst}")
         shutil.copyfile(src, dst)
-    print("Done")
+    # print("Done")
 
 # copia os dados para pasta de testes
 for tag in tags:
@@ -133,9 +133,9 @@ for tag in tags:
         for i in range(valid_length, len(match)):
             src = os.path.join(pathname+f"{tag}", match[i])
             dst = os.path.join(named_test_dirs[tag], match[i])
-            print(f"copying from {src} to {dst}")
+            #print(f"copying from {src} to {dst}")
             shutil.copyfile(src, dst)
-        print("Done")
+        # print("Done")
 
 # Configuracoes para KerasImageDataGenerator
 DataGeneratorParams = {}
@@ -187,7 +187,7 @@ physical_devices = tensorflow.config.experimental.list_physical_devices('GPU')
 
 if physical_devices:
     for dev in physical_devices:
-        tf.config.experimental.set_memory_growth(dev, True)
+        tensorflow.config.experimental.set_memory_growth(dev, True)
 
 dt = len(tensorflow.config.experimental.list_physical_devices('GPU'))
 print("Num GPUs Available: ", dt)
