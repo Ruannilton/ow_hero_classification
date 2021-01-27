@@ -28,61 +28,51 @@ tags = get_taglist()
 def prepare_folders(path="./heroes"):
     # Cria pasta 'dataset'
     if not os.path.exists(dataset):
-        print(f"step1 creating dataset folder")
         os.mkdir(dataset)
 
     # Cria pasta 'dataset/train'
     train_dir = os.path.join(dataset, 'train')
     if not os.path.exists(train_dir):
-        print(f" step2 creating {train_dir}")
         os.mkdir(train_dir)
 
     # Cria pasta 'dataset/valid'
     valid_dir = os.path.join(dataset, 'valid')
     if not os.path.exists(valid_dir):
-        print(f" step3 creating {valid_dir}")
         os.mkdir(valid_dir)
 
     # Cria pasta 'dataset/test'
     test_dir = os.path.join(dataset, 'test')
     if not os.path.exists(test_dir):
-        print(f" step4 creating {test_dir}")
         os.mkdir(test_dir)
 
     # Cria subpastas de 'dataset/train'
     named_train_dirs = {}
     for tag in tags:
         name = os.path.join(train_dir, tag)
-        print(name)
         named_train_dirs[tag] = name
 
     for p in named_train_dirs:
         if not os.path.exists(named_train_dirs[p]):
-            print(f"creating {named_train_dirs[p]}")
             os.mkdir(named_train_dirs[p])
 
     # Cria subpastas de 'dataset/valid'
     named_valid_dirs = {}
     for tag in tags:
         name = os.path.join(valid_dir, tag)
-        print(name)
         named_valid_dirs[tag] = name
 
     for p in named_valid_dirs:
         if not os.path.exists(named_valid_dirs[p]):
-            print(f"creating {named_valid_dirs[p]}")
             os.mkdir(named_valid_dirs[p])
 
     # Cria subpastas de 'dataset/test'
     named_test_dirs = {}
     for tag in tags:
         name = os.path.join(test_dir, tag)
-        print(name)
         named_test_dirs[tag] = os.path.join(test_dir, tag)
 
         for p in named_test_dirs:
             if not os.path.exists(named_test_dirs[p]):
-                print(f"creating {named_test_dirs[p]}")
                 os.mkdir(named_test_dirs[p])
 
     return (train_dir, valid_dir, test_dir, named_train_dirs, named_valid_dirs, named_test_dirs)
@@ -92,21 +82,17 @@ train_dir, valid_dir, test_dir, named_train_dirs, named_valid_dirs, named_test_d
 
 # copia os dados para pasta de treino
 for tag in tags:
-    print(f"In {tag}")
     match = [f for f in os.listdir(pathname+f"{tag}") if f[0].isdigit()]
     train_fac = 0.5
     match_length = int(len(match)*train_fac)
-    print(match_length)
     for i in range(match_length):
         src = os.path.join(pathname+f"{tag}", match[i])
         dst = os.path.join(named_train_dirs[tag], match[i])
-        print(f"copying from {src} to {dst}")
         shutil.copyfile(src, dst)
-    print("Done")
 
  # copia os dados para pasta de validacao
 for tag in tags:
-    print(f"In {tag}")
+
     match = [f for f in os.listdir(pathname+f"{tag}") if f[0].isdigit()]
     train_fac = 0.5
     valid_fac = 0.3
@@ -115,14 +101,12 @@ for tag in tags:
     for i in range(train_length, valid_length, 1):
         src = os.path.join(pathname+f"{tag}", match[i])
         dst = os.path.join(named_valid_dirs[tag], match[i])
-        print(f"copying from {src} to {dst}")
         shutil.copyfile(src, dst)
-    print("Done")
+
 
 # copia os dados para pasta de testes
 for tag in tags:
     if tag != ".ipynb_checkpoints":
-        print(f"In {tag}")
         match = [f for f in os.listdir(pathname+f"{tag}") if f[0].isdigit()]
         train_fac = 0.5
         valid_fac = 0.3
@@ -133,9 +117,8 @@ for tag in tags:
         for i in range(valid_length, len(match)):
             src = os.path.join(pathname+f"{tag}", match[i])
             dst = os.path.join(named_test_dirs[tag], match[i])
-            print(f"copying from {src} to {dst}")
             shutil.copyfile(src, dst)
-        print("Done")
+
 
 # Configuracoes para KerasImageDataGenerator
 DataGeneratorParams = {}
@@ -187,23 +170,20 @@ physical_devices = tensorflow.config.experimental.list_physical_devices('GPU')
 
 if physical_devices:
     for dev in physical_devices:
-        tf.config.experimental.set_memory_growth(dev, True)
+        tensorflow.config.experimental.set_memory_growth(dev, True)
 
 dt = len(tensorflow.config.experimental.list_physical_devices('GPU'))
-print("Num GPUs Available: ", dt)
-print("tf version: ", tensorflow.__version__)
 device = ""
 if dt < 1:
-    print("No GPU Available, reverting to cpu")
     device = "cpu"
 else:
     device = "gpu"
 
-print(f"device: {device}, enabled")
-
 INPUT_SHAPE = (512, 512, 3)
-NUM_CLASSES = 30
+NUM_CLASSES = len(tags)
 model = build_network(INPUT_SHAPE, NUM_CLASSES)
 
 history = model.fit(train_generator, steps_per_epoch=10, epochs=30,
                     validation_data=valid_generator, validation_steps=10)
+
+model.save('saved_model')
