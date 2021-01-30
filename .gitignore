@@ -1,2 +1,5 @@
-data
+test
+train
+valid
 .vscode
+saved_model
