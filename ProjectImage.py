@@ -196,11 +196,14 @@ def build_network(input_shape, num_classes):
     model.add(Conv2D(filters=64,                      kernel_size=(3, 3),
                      padding="same", activation="relu", input_shape=input_shape))
     model.add(MaxPooling2D())
-    model.add(Conv2D(filters=32,                      kernel_size=(
-        5, 5),                      padding="same", activation="relu"))
+    model.add(Conv2D(filters=64,                      kernel_size=(
+        3, 3),                      padding="same", activation="relu"))
     model.add(MaxPooling2D())
-    model.add(Conv2D(filters=16,                      kernel_size=(
-        7, 7),                      padding="same", activation="relu"))
+    model.add(Conv2D(filters=128,                      kernel_size=(
+        3, 3),                      padding="same", activation="relu"))
+    model.add(MaxPooling2D())
+    model.add(Conv2D(filters=256,                      kernel_size=(
+        3, 3),                      padding="same", activation="relu"))
     model.add(MaxPooling2D())
     model.add(Flatten())
     model.add(Dense(4*num_classes, activation="relu"))
