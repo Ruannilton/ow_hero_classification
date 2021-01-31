@@ -193,21 +193,30 @@ test_generator = test_datagen.flow_from_directory(test_dir, **datagen)
 # %%
 def build_network(input_shape, num_classes):
     model = models.Sequential()
+
     model.add(Conv2D(filters=64,                      kernel_size=(3, 3),
                      padding="same", activation="relu", input_shape=input_shape))
-    model.add(MaxPooling2D())
     model.add(Conv2D(filters=64,                      kernel_size=(
         3, 3),                      padding="same", activation="relu"))
     model.add(MaxPooling2D())
+
+    model.add(Conv2D(filters=128,                      kernel_size=(
+        3, 3),                      padding="same", activation="relu"))
     model.add(Conv2D(filters=128,                      kernel_size=(
         3, 3),                      padding="same", activation="relu"))
     model.add(MaxPooling2D())
-    model.add(Conv2D(filters=256,                      kernel_size=(
-        3, 3),                      padding="same", activation="relu"))
+
+    model.add(Conv2D(filters=64,                      kernel_size=(
+        5, 5),                      padding="same", activation="relu"))
+    model.add(Conv2D(filters=64,                      kernel_size=(
+        5, 5),                      padding="same", activation="relu"))
     model.add(MaxPooling2D())
+
     model.add(Flatten())
-    model.add(Dense(4*num_classes, activation="relu"))
-    model.add(Dense(2*num_classes, activation="relu"))
+
+    model.add(Dense(256, activation="relu"))
+    model.add(Dense(256, activation="relu"))
+    model.add(Dense(128, activation="relu"))
     model.add(Dense(num_classes, activation="softmax"))
     model.compile(optimizer=Adam(),
                   loss='categorical_crossentropy', metrics=['accuracy'])
@@ -243,8 +252,8 @@ model = build_network(INPUT_SHAPE, NUM_CLASSES)
 
 # %%
 with tensorflow.device(f'/{device}:0'):
-    history = model.fit(train_generator, steps_per_epoch=10, epochs=30,
-                        validation_data=valid_generator, validation_steps=10)
+    history = model.fit(train_generator, steps_per_epoch=25, epochs=500,
+                        validation_data=valid_generator, validation_steps=25)
 
 
 # %%
@@ -272,3 +281,4 @@ plt.legend()
 
 
 # %%
+model.save("saved_model")
